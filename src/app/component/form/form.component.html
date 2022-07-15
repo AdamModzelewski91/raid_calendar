@@ -1,0 +1,79 @@
+<form #surveyForm="ngForm" class="container form-group bg-white" (ngSubmit)="sendSurvey(surveyForm)">
+  <div class="header text-center">
+    <h1>Aktywności ({{dayOfActivity}})</h1>
+    <p>W ALT informacje o alcie/altach - dps/sup, aktywności. Godziny pozostaną takie jak main</p>
+  </div>
+  <div class="card shadow-sm container">
+    <div class="nick p-3 mb-2">
+      <label class="card-subtitle text-muted" for="nick">Nick</label>
+      <input 
+        type="text" 
+        class="form-control mb-2" 
+        name="nick"
+        id="nick" 
+        ngModel
+        required> 
+      <div class="card shadow-sm mb-4" *ngFor="let activity of weeklyActivity">      
+        <div class="row p-2">
+          <p class="card-subtitle text-muted mt-1 mb-1">{{activity.name}}</p>        
+          <div *ngFor="let role of activity.role" class="col">     
+            <input 
+              class="btn-check w-100" 
+              type="radio" 
+              value="{{role.value}}"
+              name="{{role.name}}" 
+              id="{{role.id}}"
+              ngModel
+              required     
+            >
+            <label           
+              class="btn btn-outline-primary w-100" 
+              for="{{role.id}}">{{role.value | uppercase}}
+            </label>   
+          </div>    
+        </div>  
+      </div> 
+      <div class="card shadow-sm mb-4">
+        <table class="table table-light table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Dni\godziny</th>
+              <th *ngFor="let hour of hours">{{hour}}</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let day of weeklyCalendar">
+            <tr>
+              <th>{{getDayName(day)}}</th>
+              <td *ngFor="let check of day"><input style="cursor: pointer;" type="checkbox" name="{{check}}" id="{{check}}" ngModel></td>                
+            </tr>
+          </tbody>
+        </table>
+      </div>     
+      <div class="card shadow-sm mb-4">
+        <div class="p-2">
+          <label class="card-subtitle text-muted" for="alt">ALT 1370+ (DPS/SUP - AKTYWNOŚCI)</label>
+          <input 
+            type="text" 
+            class="form-control mb-2" 
+            name="alt"
+            id="alt" 
+            ngModel> 
+        </div>
+      </div>
+      <div class="card shadow-sm mb-4">
+        <div class="p-2">
+          <label class="card-subtitle text-muted" for="info">Dodatkowe informacje</label>
+          <input 
+            type="text" 
+            class="form-control mb-2" 
+            name="info"
+            id="info" 
+            ngModel> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-grid col-6 mx-auto ">
+    <button class="btn btn-primary mt-3 mb-3" type="submit" [disabled]="!surveyForm.valid">Wyślij formularz</button>
+  </div>
+</form>
