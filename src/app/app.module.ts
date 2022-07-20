@@ -1,26 +1,35 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { routing } from './app.routes';
+import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
-import { FormComponent } from './component/form/form.component';
-import { RaidsViewComponent } from './component/raids-view/raids-view.component';
-import { NavComponent } from './component/nav/nav.component';
+import { FormComponent } from './components/form/form.component';
+import { RaidsViewComponent } from './components/raids-view/raids-view.component';
+import { NavComponent } from './components/nav/nav.component';
+import { FormService } from './service/form.service';
+import { FilterPipe } from './components/raids-view/filter-pipe';
+import { CreateRaidsComponent } from './components/create-raids/create-raids.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     FormComponent,
     RaidsViewComponent,
-    NavComponent
+    NavComponent,
+    FilterPipe,
+    CreateRaidsComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    routing
+    ReactiveFormsModule,
+    routing,
+    StoreModule.forRoot({}, {})
   ],
-  providers: [],
+  providers: [FormService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

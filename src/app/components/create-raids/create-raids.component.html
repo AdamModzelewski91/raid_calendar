@@ -1,0 +1,88 @@
+<form [formGroup]="myRaids" class="container form-group bg-white pt-2" (ngSubmit)="saveRaidGroup()">
+  <div class="card mb-2" formArrayName="days">
+    <div class="card-header">
+      <label class="form-label">Pick days of raiding:</label>
+    </div>
+    <div class="card-body">
+      <div class="btn-group d-flex">
+        <div class="col" *ngFor="let day of daysOfWeek">
+          <input type="checkbox" class="btn-check" id="{{day}}" (click)="addRaidingDays(day)">
+          <label class="btn btn-outline-primary w-100" for="{{day}}">{{day}}</label>
+        </div> 
+      </div>
+    </div>
+  </div>
+  <div class="card mb-2" formArrayName="hours">
+    <div class="card-header">
+      <label class="form-label">Pick hours of raiding:</label>
+    </div>
+    <div class="card-body">
+      <div class="btn-group d-flex">
+        <div class="col" *ngFor="let hour of hoursOfDay">
+          <input type="checkbox" class="btn-check" id="{{hour}}" (click)="addRaidingHours(hour)">
+          <label class="btn btn-outline-primary w-100" for="{{hour}}">{{hour}}</label>
+        </div> 
+      </div>
+    </div>
+  </div>
+  <div class="card mb-2" formArrayName="roles">
+    <div class="card-header d-flex">
+      <div class="col-10 p-1">
+        <button class="btn btn-primary w-100" disabled>Roles</button>
+      </div>
+      <div class="col-1 p-1">
+        <button type="button" class="btn btn-primary w-100" (click)="changeRoleCount(true)">+</button>
+      </div>
+      <div class="col-1 p-1">
+        <button type="button" class="btn btn-secondary w-100" (click)="changeRoleCount(false)">-</button>
+      </div>
+    </div>
+    <div class="card-body input-group">
+      <input class="form-control" 
+        type="text"
+        *ngFor="let role of roles().controls; let roleIndex = index"
+        formControlName="{{roleIndex}}"
+        placeholder="Type role">
+    </div>
+  </div>
+  <div formArrayName="raids">
+    <div class="card mb-2" *ngFor="let raid of raids().controls; let raidIndex = index" [formGroupName]="raidIndex">       
+      <div class="card-header d-flex" >        
+        <div class="col-6 p-1">         
+          <input class="form-control" 
+            formControlName="name"
+            placeholder="Raid">
+        </div>
+        <div class="col-2 p-1">
+          <button type="button" class="btn btn-success w-100" (click)="addNewRaid()">Add Raid</button>
+        </div>
+        <div class="col-2 p-1">
+          <button type="button" class="btn btn-danger w-100" (click)="removeRaid(raidIndex)">Remove Raid</button>
+        </div>
+    
+        <div class="col-1 p-1">
+          <button type="button" class="btn btn-primary w-100" (click)="changeDifficultCount(true, raidIndex)">+</button>
+        </div>
+        <div class="col-1 p-1">
+          <button type="button" class="btn btn-secondary w-100" (click)="changeDifficultCount(false, raidIndex)">-</button>
+        </div>   
+        
+      </div>      
+      <div class="card-body col-auto " formArrayName="difficults">
+        <label class="form-label" >Can be on:</label>
+        <div class="input-group" >
+          <input class="form-control" 
+            *ngFor="let difficult of raidDifficults(raidIndex).controls; let diffIndex = index"
+            type="text" 
+            
+            formControlName="{{diffIndex}}"
+            placeholder="Difficult">
+        </div>
+      </div>  
+    </div>
+  </div>
+  <div class="d-grid col-6 mx-auto">
+    <button class="btn btn-primary m-3" type="submit" [disabled]="!myRaids.valid">Save raid group</button>
+  </div>
+</form>
+<pre class="bg-white">{{myRaids.value | json}}</pre>
