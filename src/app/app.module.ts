@@ -11,6 +11,9 @@ import { NavComponent } from './components/nav/nav.component';
 import { FormService } from './service/form.service';
 import { FilterPipe } from './components/raids-view/filter-pipe';
 import { CreateRaidsComponent } from './components/create-raids/create-raids.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DragDropModule} from '@angular/cdk/drag-drop'
 
 
 @NgModule({
@@ -23,11 +26,14 @@ import { CreateRaidsComponent } from './components/create-raids/create-raids.com
     CreateRaidsComponent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
+    DragDropModule,
     routing,
-    StoreModule.forRoot({}, {})
+    StoreModule.forRoot({}, {}),
+    BrowserAnimationsModule,
+    ReactiveFormsModule, NgbModule,
   ],
   providers: [FormService],
   bootstrap: [AppComponent]

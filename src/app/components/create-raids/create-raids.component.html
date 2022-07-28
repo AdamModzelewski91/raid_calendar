@@ -1,4 +1,24 @@
 <form [formGroup]="myRaids" class="container form-group bg-white pt-2" (ngSubmit)="saveRaidGroup()">
+  <div class="card mb-2">
+    <div class="card-header form-group">
+      <div class="input-group" formGroupName="week">
+        <input class="form-control" placeholder="Start raiding week" 
+          ngbDatepicker #s="ngbDatepicker" formControlName="start">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" (click)="s.toggle()" type="button">Pick start</button>
+        </div>
+        <input class="form-control" placeholder="End raiding week"
+          ngbDatepicker #e="ngbDatepicker" formControlName="end">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" (click)="e.toggle()" type="button">Pick end</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <label class="form-label">Additional Information:</label>
+      <input class="form-control" type="text" formControlName="information">
+    </div>
+  </div>
   <div class="card mb-2" formArrayName="days">
     <div class="card-header">
       <label class="form-label">Pick days of raiding:</label>
@@ -6,7 +26,7 @@
     <div class="card-body">
       <div class="btn-group d-flex">
         <div class="col" *ngFor="let day of daysOfWeek">
-          <input type="checkbox" class="btn-check" id="{{day}}" (click)="addRaidingDays(day)">
+          <input [checked]="checkSelection(day, 'day')" type="checkbox" class="btn-check" id="{{day}}" value="{{day}}" (click)="addRaidingDays(day)">
           <label class="btn btn-outline-primary w-100" for="{{day}}">{{day}}</label>
         </div> 
       </div>
@@ -19,7 +39,7 @@
     <div class="card-body">
       <div class="btn-group d-flex">
         <div class="col" *ngFor="let hour of hoursOfDay">
-          <input type="checkbox" class="btn-check" id="{{hour}}" (click)="addRaidingHours(hour)">
+          <input [checked]="checkSelection(hour, 'hours')" type="checkbox" class="btn-check" id="{{hour}}" (click)="addRaidingHours(hour)">
           <label class="btn btn-outline-primary w-100" for="{{hour}}">{{hour}}</label>
         </div> 
       </div>
