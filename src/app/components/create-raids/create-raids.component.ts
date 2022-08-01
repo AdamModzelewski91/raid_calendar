@@ -17,14 +17,14 @@ export class CreateRaidsComponent implements OnInit {
   ngOnInit(): void {
     this.myRaids = this.fb.group({
       week: this.fb.group({
-        start: this.fb.control(null),
-        end: this.fb.control(null),
+        start: this.fb.control(null, Validators.required),
+        end: this.fb.control(null, Validators.required),
       }),
       information: this.fb.control(''),
       days: this.fb.array([]),    
       hours: this.fb.array([]),    
       roles: this.fb.array([
-        this.fb.control('role', Validators.required),
+        this.fb.control('', Validators.required),
 
       ]),
       raids: this.fb.array([
@@ -42,29 +42,30 @@ export class CreateRaidsComponent implements OnInit {
 
   reloadSavedRaid(): void{
     let savedRaid = this.formService.getUsersActivity();
+    if (!Array.isArray(savedRaid)) {    
+      this.week().setValue(new Object(savedRaid.week));
+      this.information().setValue(new Object(savedRaid.information));
+      
+      savedRaid.hours.forEach((hour: any) => {
+        this.addRaidingHours(hour);
+      })
 
-    this.week().setValue(new Object(savedRaid.week));
-    this.information().setValue(new Object(savedRaid.information));
-    
-    savedRaid.hours.forEach((hour: any) => {
-      this.addRaidingHours(hour);
-    })
+      savedRaid.days.forEach((day: string) => {
+        this.addRaidingDays(day);
+      })   
 
-    savedRaid.days.forEach((day: string) => {
-      this.addRaidingDays(day);
-    })   
+      this.roles().removeAt(0);
+      savedRaid.roles.forEach((role: string) => {
+        this.roles().push(this.fb.control(role, Validators.required))
+      })
 
-    this.roles().removeAt(0);
-    savedRaid.roles.forEach((role: string) => {
-      this.roles().push(this.fb.control(role, Validators.required))
-    })
-
-    this.raids().removeAt(0);
-    savedRaid.raids.forEach((raid: any) => {      
-      this.raids().push(
-        this.newRaid(raid.name, raid.difficults)
-      )
-    })    
+      this.raids().removeAt(0);
+      savedRaid.raids.forEach((raid: any) => {      
+        this.raids().push(
+          this.newRaid(raid.name, raid.difficults)
+        )
+      })    
+    }
   }
 
   week(): FormGroup{

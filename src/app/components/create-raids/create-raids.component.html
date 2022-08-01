@@ -24,7 +24,7 @@
       <label class="form-label">Pick days of raiding:</label>
     </div>
     <div class="card-body">
-      <div class="btn-group d-flex">
+      <div class="btn-group d-flex flex-wrap">
         <div class="col" *ngFor="let day of daysOfWeek">
           <input [checked]="checkSelection(day, 'day')" type="checkbox" class="btn-check" id="{{day}}" value="{{day}}" (click)="addRaidingDays(day)">
           <label class="btn btn-outline-primary w-100" for="{{day}}">{{day}}</label>
@@ -37,7 +37,7 @@
       <label class="form-label">Pick hours of raiding:</label>
     </div>
     <div class="card-body">
-      <div class="btn-group d-flex">
+      <div class="btn-group d-flex flex-wrap">
         <div class="col" *ngFor="let hour of hoursOfDay">
           <input [checked]="checkSelection(hour, 'hours')" type="checkbox" class="btn-check" id="{{hour}}" (click)="addRaidingHours(hour)">
           <label class="btn btn-outline-primary w-100" for="{{hour}}">{{hour}}</label>
