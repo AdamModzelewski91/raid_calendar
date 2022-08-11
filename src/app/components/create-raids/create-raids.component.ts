@@ -32,6 +32,7 @@ export class CreateRaidsComponent implements OnInit {
           name: this.fb.control('New Raid'),         
           difficults: this.fb.array([
             this.fb.control('Normal', Validators.required),
+            this.fb.control('None', Validators.required),
           ])
         })
       ]),    
@@ -169,7 +170,7 @@ export class CreateRaidsComponent implements OnInit {
   }
 
   addNewRaid(): void {
-    this.raids().push(this.newRaid('', ['Normal']))
+    this.raids().push(this.newRaid('', ['Normal', 'None']))
   }
   
   removeRaid(index: number): void {
@@ -202,5 +203,37 @@ export class CreateRaidsComponent implements OnInit {
 
   saveRaidGroup(): void {
     localStorage.setItem('calendar', JSON.stringify(this.myRaids.value));
+
+    /* iWu45NKCsvrKOtPlEC2SZzveBVOhoGtjSBrBg8GkHF4doskZ0oUSkySDBf4BYt5T */
+
+    /* var axios = require('axios');
+var data = JSON.stringify({
+    "collection": "<COLLECTION_NAME>",
+    "database": "<DATABASE_NAME>",
+    "dataSource": "RaidCalendar",
+    "projection": {
+        "_id": 1
+    }
+});
+            
+var config = {
+    method: 'post',
+    url: 'https://data.mongodb-api.com/app/data-gshcb/endpoint/data/v1/action/findOne',
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Request-Headers': '*',
+      'api-key': 'iWu45NKCsvrKOtPlEC2SZzveBVOhoGtjSBrBg8GkHF4doskZ0oUSkySDBf4BYt5T',
+    },
+    data: data
+};
+            
+axios(config)
+    .then(function (response) {
+        console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+ */
   }
 }

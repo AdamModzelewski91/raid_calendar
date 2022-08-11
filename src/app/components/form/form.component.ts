@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { FormService } from 'src/app/service/form.service';
 
 
@@ -9,35 +10,74 @@ import { FormService } from 'src/app/service/form.service';
   styleUrls: ['./form.component.scss']
 })
 export class FormComponent implements OnInit {
-  public userActivity: any;
+  public raidActivity: any;
   public weeklyCalendar: any = [];
+  public userActivity: any;
 
-  constructor(private formService: FormService) { }
+  constructor(private formService: FormService, private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.userActivity = this.formService.getUsersActivity();
-    this.generateCalendar();     
+    this.raidActivity = this.formService.getUsersActivity();
+    // this.generateCalendar();
+    this.userActivity = this.fb.group({
+      player: this.fb.control('', Validators.required),
+      role: this.fb.control('', Validators.required),
+      selectedRaid: this.fb.array([]),
+      raidDays: this.fb.array([])
+    });
+    this.genSelectedRaid();
+    this.genSelectedDaysHours();
   }
- 
+  
+  selectedRaid(): FormArray {
+    return this.userActivity.get('selectedRaid') as FormArray
+  }
+
+  raidDays(): FormArray{
+    return this.userActivity.get('raidDays') as FormArray;
+  } 
+
+  hours(): FormArray {
+    return this.userActivity.get('hours') as FormArray;
+  }
+
+  days(): FormControl {
+    return this.userActivity.get('days') as FormControl;
+  }
+
   generateCurrentWeek(date: any) {
     return date.day+'/'+date.month+'/'+date.year
   }
 
-  generateCalendar() {    
-    this.weeklyCalendar = this.userActivity.days.map((day: any) => {
-      return this.userActivity.hours.map((hour: any) => day+ '_' + hour);       
+  genSelectedRaid() {
+    this.raidActivity.raids.forEach((raid: any) => {
+      this.selectedRaid().push(this.fb.group({
+        raidName: this.fb.control(raid.name),
+        raidDiff: this.fb.control('', Validators.required)
+      }))
     })
   }
 
-  getDayName(days: any[]) {    
-    const onlyName = days.map(day => day.split('_'));  
-    return onlyName.reduce((acc, arr)=> arr[0]);
+  genSelectedDaysHours() {
+    this.raidActivity.days.forEach((day: any) => {
+      this.raidDays().push(this.fb.group({
+        day: this.fb.control(day),
+        hours: this.fb.array([])
+      }))
+    })
   }
 
-  sendSurvey(form: NgForm) {     
-    const raidDaysArray = Object.entries(form.value);
-    const filtredRaidDays = raidDaysArray.filter(data => data[0] !== 'nick' && data[1] !== '')
-    const newVal = {name: form.value.nick, date: this.userActivity.week, raids: filtredRaidDays}
-    localStorage.setItem('player', JSON.stringify(newVal))  
+  checkRaidingHours(index: number, hour: string | number) {    
+    const checkHour = this.raidDays().value[index].hours.findIndex((h:any) => h === hour)
+    if (checkHour === -1) {
+      this.raidDays().value[index].hours.push(hour)
+    } else {
+      this.raidDays().value[index].hours.splice(checkHour, 1)
+    }
+  }
+
+  sendSurvey() {     
+    console.log(this.userActivity)
+
   }
 }

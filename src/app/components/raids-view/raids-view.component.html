@@ -14,8 +14,7 @@
       class="accordion-collapse collapse show" 
       [attr.aria-labelledby]="'panelsStayOpen-heading'+i">
       <div class="accordion-body card-group" cdkDropListGroup>
-        <div class="card" 
-          *ngFor="let lob of raid.lobby; let j = index">
+        <div class="card" *ngFor="let lob of raid.lobby; let j = index">
           <div class="card-header" >
             <h1 class="card-title">{{lob.placeNumber === 0 ? lob.placeName : lob.placeName +' ' + lob.placeNumber}} 
               <button (click)="removeRaid(i, j)" *ngIf="j > 0" class="btn btn-danger btn-sm float-end">X</button>
@@ -25,34 +24,33 @@
               <h3 class="card-subtitle text-muted">Search:</h3>
               <div class="btn-group d-flex flex-wrap mb-1" role="group" >
                 <div *ngFor="let day of usersActivity.days" >
-                  <input type="checkbox" class="btn-check" name="day" id="day{{day}}" (click)="searchInDays(day, i)">
-                  <label class="btn btn-outline-primary btn-sm" for="day{{day}}">{{day}}</label>
+                  <input type="checkbox" class="btn-check" name="day_{{i}}" id="day_{{day}}_{{i}}" (click)="searchInDays(day, i)">
+                  <label class="btn btn-outline-primary btn-sm" for="day_{{day}}_{{i}}">{{day}}</label>
+                  
                 </div>
               </div>
-              <div class="btn-group d-flex flex-wrap" role="group">
+              <div class="btn-group d-flex flex-wrap" role="group" *ngIf="searchDays[i].length > 0">
                 <div *ngFor="let hour of usersActivity.hours">
-                  <input type="checkbox" class="btn-check" name="hour" id="hour{{hour}}" (click)="searchInHours(hour, i)">
-                  <label class="btn btn-outline-primary btn-sm" for="hour{{hour}}">{{hour}}</label>
+                  <input type="checkbox" class="btn-check" name="hour_{{i}}" id="hour_{{hour}}_{{i}}" (click)="searchInHours(hour, i)">
+                  <label class="btn btn-outline-primary btn-sm" for="hour_{{hour}}_{{i}}">{{hour}}</label>
                 </div>
               </div>
             </div>
           </div>
-          <div cdkDropList *ngIf="!startFilter"
+          <div cdkDropList
             id="{{lob.placeName}}{{lob.placeNumber}}"
             [cdkDropListData]="lob.players"
             (cdkDropListDropped)="drop($event)"      
             class="list-group list-group-flush">
             <div 
-              *ngFor="let player of lob.players"  
+              *ngFor="let player of (lob.players | filterPlayers: filtred:startFilter[i]:i:j:dummy)"  
               cdkDrag
               [cdkDragData]="player"
-              class="list-group-item"
-              
+              class="list-group-item"                      
             >
-              <p>{{player.player}} <span class="badge rounded-pill bg-primary float-end">{{player.role}}</span></p>
-            </div>
-          </div>
-          
+              <p>{{player.player}}<span class="badge rounded-pill bg-primary float-end">{{player.role}}</span></p>
+            </div>            
+          </div>          
         </div>
       </div>
     </div>

@@ -1,88 +1,67 @@
-<form #surveyForm="ngForm" class="container form-group bg-white" (ngSubmit)="sendSurvey(surveyForm)">
+<form [formGroup]="userActivity" class="container form-group bg-white" (ngSubmit)="sendSurvey()">
   <div class="header text-center">
-    <h1>Aktywności ({{generateCurrentWeek(userActivity.week.start)}} - {{generateCurrentWeek(userActivity.week.end)}})</h1>
-    <p>{{userActivity.information}}</p>
+    <h1>Aktywności ({{generateCurrentWeek(raidActivity.week.start)}} - {{generateCurrentWeek(raidActivity.week.end)}})</h1>
+    <p>{{raidActivity.information}}</p>
   </div>
   <div class="card shadow-sm container">
-    <div class="nick p-3 mb-2">
-      <label class="card-subtitle text-muted" for="nick">Nick</label>
+    <div class="p-3 mb-2">
+      <label class="card-subtitle text-muted" for="player">Nick</label>
       <input 
         type="text" 
         class="form-control mb-2" 
-        name="nick"
-        id="nick" 
-        ngModel
-        required> 
+        name="player"
+        id="player"
+        formControlName="player"
+      > 
       <div class="btn-group d-flex" >
-        <div class="col  ps-2 pe-2 pb-3"  *ngFor="let role of userActivity.roles">
-          <input class="btn-check" type="radio" name="role" id="{{role}}" value="{{role}}" required ngModel>
+        <div class="col  ps-2 pe-2 pb-3" *ngFor="let role of raidActivity.roles">
+          <input class="btn-check" type="radio" name="role" id="{{role}}" value="{{role}}" formControlName="role">
           <label class="btn btn-outline-primary w-100" for="{{role}}"> {{role | uppercase}} </label>
         </div>       
       </div>
-      <div class="card shadow-sm mb-4" *ngFor="let activity of userActivity.raids">      
-        <div class="row p-2 btn-group d-flex">
-          <p class="card-subtitle text-muted mt-1 mb-1">{{activity.name}}</p>        
-          <div *ngFor="let role of activity.difficults" class="col">     
-            <input 
-              class="btn-check" 
-              type="radio" 
-              name="{{activity.name}}" 
-              id="{{activity.name}}_{{role}}"
-              value="{{role}}"
-              ngModel
-              required     
-            >
-            <label           
-              class="btn btn-outline-primary w-100" 
-              for="{{activity.name}}_{{role}}">{{role | uppercase}}
-            </label>   
-          </div>    
-        </div>  
-      </div> 
-      <div class="card shadow-sm mb-4" *ngIf="userActivity.days.length > 0">
-        <table class="table table-light table-striped mb-0">
+      <div formArrayName="selectedRaid">
+        <div class="card shadow-sm mb-4" *ngFor="let activity of raidActivity.raids; let acitivityIndex = index" >      
+          <div class="row p-2 btn-group d-flex" [formGroupName]="acitivityIndex">
+            <p class="card-subtitle text-muted" name="raidName">{{activity.name}}</p>      
+            <div *ngFor="let role of activity.difficults" class="col">     
+              <input 
+                class="btn-check" 
+                type="radio" 
+                id="{{activity.name}}_{{role}}"
+                value="{{role}}" 
+                formControlName="raidDiff"
+              >
+              <label           
+                class="btn btn-outline-primary w-100" 
+                for="{{activity.name}}_{{role}}">{{role | uppercase}}
+              </label>   
+            </div>    
+          </div>  
+        </div> 
+      </div>
+      <div class="card shadow-sm mb-4" *ngIf="raidActivity.days.length > 0">
+        <table class="table table-light table-striped mb-0" >
           <thead>
             <tr>
               <th>Dni\godziny</th>
-              <th *ngFor="let hour of userActivity.hours">{{hour}}</th>
+              <th *ngFor="let hour of raidActivity.hours">{{hour}}</th>
             </tr>
           </thead>
-          <tbody *ngFor="let day of weeklyCalendar">
-            <tr>
-              <th>{{getDayName(day)}}</th>
-              <td *ngFor="let check of day">
+          <tbody formArrayName="raidDays">
+            <tr *ngFor="let day of raidActivity.days; let i = index" [formGroupName]="i" >
+              <th>{{day}}</th> 
+              <td *ngFor="let hour of raidActivity.hours">
                 <input style="cursor: pointer;" 
-                  type="checkbox" name="{{check}}" id="{{check}}" ngModel>
-              </td>                
+                  type="checkbox" formArrayName="hours" (click)="checkRaidingHours(i, hour)">
+              </td>
+                                         
             </tr>
           </tbody>
         </table>
-      </div>     
-      <div class="card shadow-sm mb-4">
-        <div class="p-2">
-          <label class="card-subtitle text-muted" for="alt">ALT 1370+ (DPS/SUP - AKTYWNOŚCI)</label>
-          <input 
-            type="text" 
-            class="form-control mb-2" 
-            name="alt"
-            id="alt" 
-            ngModel> 
-        </div>
-      </div>
-      <div class="card shadow-sm mb-4">
-        <div class="p-2">
-          <label class="card-subtitle text-muted" for="info">Dodatkowe informacje</label>
-          <input 
-            type="text" 
-            class="form-control mb-2" 
-            name="info"
-            id="info" 
-            ngModel> 
-        </div>
-      </div>
+      </div>    
     </div>
   </div>
   <div class="d-grid col-6 mx-auto ">
-    <button class="btn btn-primary mt-3 mb-3" type="submit" [disabled]="!surveyForm.valid">Wyślij formularz</button>
+    <button class="btn btn-primary mt-3 mb-3" type="submit" [disabled]="!userActivity.valid">Wyślij formularz</button>
   </div>
 </form>

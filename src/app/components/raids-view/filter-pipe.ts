@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'filter'
+  name: 'filterPlayers',
 })
+
 export class FilterPipe implements PipeTransform{
-  transform(values: any[]) {
-    if (!values){
-      return values;
-    }
-    return values.filter(item => item.name)
+  transform(values: any[], search: any[], startFilter: boolean[], globalIndex: number, index: number, dummy: number) {  
+    return startFilter && index === 0 
+      ? values.filter(item => search[globalIndex].find((s: any) => item.player === s.player)) 
+      : values;
   }
 }
