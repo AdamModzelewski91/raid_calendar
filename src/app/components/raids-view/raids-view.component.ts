@@ -9,15 +9,15 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 })
 
 export class RaidsViewComponent implements OnInit {
-  usersActivity!: any;
-  weeklyActivity!: any;
+  raidActivity!: any;
+  activePlayers!: any;
   searchDays :any = [];
   searchHours :any = [];
   startFilter: any = [];
   filtred: any[] = [];
   globFiltring: any[] = [];
 
-  listOfPlayers: any = [];
+  listOfRaids: any = [];
   players: any = [];
 
   dummy = 0;
@@ -25,55 +25,84 @@ export class RaidsViewComponent implements OnInit {
   constructor(private formService: FormService) { }
 
   ngOnInit(): void {
-    this.usersActivity = this.formService.getUsersActivity()
-    // this.weeklyActivity = this.formService.getPlayers();
-    this.generateRaidsView(this.usersActivity)
-    this.searchDays = this.generateRaidArrays(this.searchDays);
-    this.searchHours = this.generateRaidArrays(this.searchHours);    
-    this.filtred = this.generateRaidArrays(this.filtred);    
-    this.startFilter = this.generateFlagFilter(this.startFilter);    
+    this.formService.getUsersActivity().subscribe(raidData => { 
+      this.generateRaidsView(raidData);
+    });
+
+    this.formService.getPlayers().subscribe(player => {
+      this.populatePlayers(player);
+    });
+  }
+
+  populatePlayers(players: [any]) {
+    this.activePlayers = players;
+
+    players.map(player => {
+      this.listOfRaids.map((raid: any) => {
+        player.selectedRaid.filter((playerRaid: any) => {
+          if (playerRaid.raidName === raid.raidName && playerRaid.raidDiff === raid.raidDiff){
+            let days = player.raidDays.filter((day: any) => day.hours.length > 0);
+
+            raid.lobby[0].players.push({
+              player: player.player,
+              role: player.role,
+              raidDays: days,
+            });
+          }
+        });
+      });
+    });
   }
   
-  generateRaidsView(userActivity: any){
-    let listOfPlayers = userActivity.raids.map((raid: any) => {
+  generateRaidsView(raidData: any){         
+    this.raidActivity = raidData;
+
+    let listOfPlayers = raidData.raids.map((raid: any) => {
       return raid.difficults.map((diff: any) => {
         return {
           raidName: raid.name,
           raidDiff: diff,
           lobby: [
             {
-              placeName: 'Lobby', placeNumber: 0, players:[]
+              placeName: 'Lobby', placeNumber: 0, players:[],
             },
             {
-              placeName: 'Raid', placeNumber: 1, raidTime: '', players: []
+              placeName: 'Raid', placeNumber: 1, raidTime: '', players: [],
             },
-          ]
-        }
-      })
-    })
-    this.listOfPlayers = listOfPlayers.reduce((acu: any, next: any) => [...acu, ...next])    
+          ],
+        };
+      });
+    });
+    this.listOfRaids = listOfPlayers.reduce((acu: any, next: any) => [...acu, ...next]);
+    
+    this.searchDays = this.generateRaidArrays(this.listOfRaids);
+    this.searchHours = this.generateRaidArrays(this.listOfRaids);
+    this.filtred = this.generateRaidArrays(this.listOfRaids);
+    this.startFilter = this.generateFlagFilter(this.listOfRaids);
   }
 
-  generateRaidArrays(genArray: any[]){
-    const raidCount = this.listOfPlayers.length;
+  generateRaidArrays(listOfRaids: any){
+    const raidCount = listOfRaids.length;
+    const genArray = [];
     for (let i = 0; i < raidCount; i++) {
-      genArray.push([])
+      genArray.push([]);
     }
-    return genArray
+    return genArray;
   }
 
-  generateFlagFilter(genArray: any[]){
-    const raidCount = this.listOfPlayers.length;
+  generateFlagFilter(listOfRaids: any){
+    const raidCount = listOfRaids.length;
+    const genArray = [];
     for (let i = 0; i < raidCount; i++) {
-      genArray.push(false)
+      genArray.push(false);
     }
-    return genArray
+    return genArray;
   }
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      this.filterPlayersByHours( event.currentIndex)
+      this.filterPlayersByHours( event.currentIndex);
     } else {
       transferArrayItem(
         event.previousContainer.data,
@@ -81,31 +110,31 @@ export class RaidsViewComponent implements OnInit {
         event.previousIndex,
         event.currentIndex,
       );
-      this.filterPlayersByHours( event.currentIndex)
+      this.filterPlayersByHours( event.currentIndex);
     }
   }
 
   addNewRaid(globIndex: number) {    
-    const returnRaid = this.listOfPlayers[globIndex].lobby.reduce((acc: any, next: any) =>{
-      return next.placeNumber - acc.placeNumber > 1 ? acc : next       
+    const returnRaid = this.listOfRaids[globIndex].lobby.reduce((acc: any, next: any) =>{
+      return next.placeNumber - acc.placeNumber > 1 ? acc : next; 
     })
-    const actualRaidNum = returnRaid.placeNumber + 1
-    this.listOfPlayers[globIndex].lobby.push({      
-      placeName: 'Raid', placeNumber: actualRaidNum, players: []     
+    const actualRaidNum = returnRaid.placeNumber + 1;
+    this.listOfRaids[globIndex].lobby.push({      
+      placeName: 'Raid', placeNumber: actualRaidNum, players: [], 
     })
-    this.listOfPlayers[globIndex].lobby.sort(this.sortRaids)
+    this.listOfRaids[globIndex].lobby.sort(this.sortRaids);
   }
 
   sortRaids(a: any, b: any){    
-    return a.placeNumber - b.placeNumber
+    return a.placeNumber - b.placeNumber;
   }
 
   removeRaid(globIndex: number, raidIndex: number) {
-    this.listOfPlayers[globIndex].lobby.splice(raidIndex, 1)
+    this.listOfRaids[globIndex].lobby.splice(raidIndex, 1);
   }
 
   searchInDays(day: any, globalIndex: number): void{    
-    const index = this.searchDays[globalIndex].findIndex((item: string) => item === day)
+    const index = this.searchDays[globalIndex].findIndex((item: string) => item === day);
     if(index === -1) {
       this.searchDays[globalIndex].push(day);
     } else {
@@ -115,7 +144,7 @@ export class RaidsViewComponent implements OnInit {
   }
 
   searchInHours(hour: any, globalIndex: number): void{
-    const index = this.searchHours[globalIndex].findIndex((item: string) => item === hour)
+    const index = this.searchHours[globalIndex].findIndex((item: string) => item === hour);
     if(index === -1) {
       this.searchHours[globalIndex].push(hour);
     } else {
@@ -129,7 +158,7 @@ export class RaidsViewComponent implements OnInit {
     if (this.startFilter[globalIndex] && this.searchHours[globalIndex].length === 0 && this.searchDays[globalIndex].length === 0) {
       players = this.filtred[globalIndex];
     } else {
-      players = this.listOfPlayers[globalIndex].lobby[0].players;
+      players = this.listOfRaids[globalIndex].lobby[0].players;
     }
 
     this.filtred[globalIndex] = players.filter((player: any) => {
@@ -139,19 +168,19 @@ export class RaidsViewComponent implements OnInit {
     }) 
 
     if (this.searchDays[globalIndex].length === 0) {
-      this.filtred[globalIndex] = this.listOfPlayers[globalIndex].lobby[0].players;
+      this.filtred[globalIndex] = this.listOfRaids[globalIndex].lobby[0].players;
     }
     
-    this.setFilterFlag(globalIndex) 
+    this.setFilterFlag(globalIndex);
   }
 
   filterPlayersByHours(globalIndex: number): void {
     let players;
     if (this.startFilter[globalIndex] && this.searchHours[globalIndex].length === 0 && this.searchDays[globalIndex].length === 0) {
       this.filterPlayersByDays(globalIndex);
-      players = this.filtred[globalIndex]
+      players = this.filtred[globalIndex];
     } else {
-      players = this.listOfPlayers[globalIndex].lobby[0].players;
+      players = this.listOfRaids[globalIndex].lobby[0].players;
     }
     
     if (this.searchHours[globalIndex].length > 0 ) {    
@@ -175,7 +204,7 @@ export class RaidsViewComponent implements OnInit {
       this.filterPlayersByDays(globalIndex);
     }
 
-    this.setFilterFlag(globalIndex)   
+    this.setFilterFlag(globalIndex);
   }  
 
   setFilterFlag(globalIndex: number) {    

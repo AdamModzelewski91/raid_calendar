@@ -9,10 +9,10 @@ import { FormService } from 'src/app/service/form.service';
 })
 export class CreateRaidsComponent implements OnInit {
   public myRaids!: FormGroup;
-  public daysOfWeek = [ 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela', 'Poniedziałek', 'Wtorek'];
-  public hoursOfDay = ['Cały',12,13,14,15,16,17,18,19,20,21,22];
+  public daysOfWeek = [ "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday", "Tuesday"];
+  public hoursOfDay = ['Whole',12,13,14,15,16,17,18,19,20,21,22];
   
-  constructor(private fb: FormBuilder, private formService: FormService) { }  
+  constructor(private fb: FormBuilder, public formService: FormService) { }  
 
   ngOnInit(): void {
     this.myRaids = this.fb.group({
@@ -38,35 +38,34 @@ export class CreateRaidsComponent implements OnInit {
       ]),    
     })
 
-    this.reloadSavedRaid()    
+    this.reloadSavedRaid();  
   }  
 
-  reloadSavedRaid(): void{
-    let savedRaid = this.formService.getUsersActivity();
-    if (!Array.isArray(savedRaid)) {    
-      this.week().setValue(new Object(savedRaid.week));
-      this.information().setValue(new Object(savedRaid.information));
+  reloadSavedRaid(): void{    
+    this.formService.getUsersActivity().subscribe(raidsData => {
+      this.week().patchValue(new Object(raidsData.week));
+      this.information().patchValue(new Object(raidsData.information));
       
-      savedRaid.hours.forEach((hour: any) => {
+      raidsData.hours.forEach((hour: any) => {
         this.addRaidingHours(hour);
-      })
+      });
 
-      savedRaid.days.forEach((day: string) => {
+      raidsData.days.forEach((day: string) => {
         this.addRaidingDays(day);
-      })   
+      });
 
       this.roles().removeAt(0);
-      savedRaid.roles.forEach((role: string) => {
-        this.roles().push(this.fb.control(role, Validators.required))
-      })
+      raidsData.roles.forEach((role: string) => {
+        this.roles().push(this.fb.control(role, Validators.required));
+      });
 
       this.raids().removeAt(0);
-      savedRaid.raids.forEach((raid: any) => {      
+      raidsData.raids.forEach((raid: any) => {      
         this.raids().push(
           this.newRaid(raid.name, raid.difficults)
         )
-      })    
-    }
+      });
+    });
   }
 
   week(): FormGroup{
@@ -88,7 +87,7 @@ export class CreateRaidsComponent implements OnInit {
   raidDifficults(raidIndex: number): FormArray{
     return this.raids()
       .at(raidIndex)
-      .get('difficults') as FormArray
+      .get('difficults') as FormArray;
   }
 
   days(): FormArray{
@@ -101,7 +100,7 @@ export class CreateRaidsComponent implements OnInit {
 
   getSelectedValue(select: string) {
     if (select === 'day') {
-      return this.days().value;   
+      return this.days().value;
     } else if(select === 'hours'){
       return this.hours().value; 
     }
@@ -109,12 +108,12 @@ export class CreateRaidsComponent implements OnInit {
 
   checkMultiplication(val: string | number, select: string): number{
     const checkArray = this.getSelectedValue(select);   
-    return checkArray.findIndex((item: any) => item === val)
+    return checkArray.findIndex((item: any) => item === val);
   }
 
   checkSelection(val: string | number, select: string): boolean{
     const checkArray = this.getSelectedValue(select);
-    const index = checkArray.findIndex((item: any) => item === val)
+    const index = checkArray.findIndex((item: any) => item === val);
     if (index === -1) {
       return false;
     } 
@@ -162,15 +161,15 @@ export class CreateRaidsComponent implements OnInit {
     return this.fb.group({
       name: this.fb.control(name, Validators.required),
       difficults: this.fb.array(newDiffs)
-    })
+    });
   } 
 
   newRole(): FormControl{
-    return this.fb.control('', Validators.required)
+    return this.fb.control('', Validators.required);
   }
 
   addNewRaid(): void {
-    this.raids().push(this.newRaid('', ['Normal', 'None']))
+    this.raids().push(this.newRaid('', ['Normal', 'None']));
   }
   
   removeRaid(index: number): void {
@@ -178,15 +177,15 @@ export class CreateRaidsComponent implements OnInit {
   }
 
   newDificulties(): FormControl{
-    return this.fb.control('', Validators.required)
+    return this.fb.control('', Validators.required);
   }
 
   changeRoleCount(sign: boolean): void{
-    const roleCount = this.roles().length
+    const roleCount = this.roles().length;
     if(roleCount < 6 && sign) {
-      this.roles().push(this.newRole())
+      this.roles().push(this.newRole());
     } else if (roleCount > 1 && !sign) {
-      this.roles().removeAt(roleCount - 1)
+      this.roles().removeAt(roleCount - 1);
     }
   }
 
@@ -199,41 +198,5 @@ export class CreateRaidsComponent implements OnInit {
       difficultNum--;     
       this.raidDifficults(raidIndex).removeAt(difficultNum);
     }
-  }
-
-  saveRaidGroup(): void {
-    localStorage.setItem('calendar', JSON.stringify(this.myRaids.value));
-
-    /* iWu45NKCsvrKOtPlEC2SZzveBVOhoGtjSBrBg8GkHF4doskZ0oUSkySDBf4BYt5T */
-
-    /* var axios = require('axios');
-var data = JSON.stringify({
-    "collection": "<COLLECTION_NAME>",
-    "database": "<DATABASE_NAME>",
-    "dataSource": "RaidCalendar",
-    "projection": {
-        "_id": 1
-    }
-});
-            
-var config = {
-    method: 'post',
-    url: 'https://data.mongodb-api.com/app/data-gshcb/endpoint/data/v1/action/findOne',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Request-Headers': '*',
-      'api-key': 'iWu45NKCsvrKOtPlEC2SZzveBVOhoGtjSBrBg8GkHF4doskZ0oUSkySDBf4BYt5T',
-    },
-    data: data
-};
-            
-axios(config)
-    .then(function (response) {
-        console.log(JSON.stringify(response.data));
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
- */
   }
 }

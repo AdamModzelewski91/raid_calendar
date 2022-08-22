@@ -1,5 +1,5 @@
-<div class="accordion container bg-white" id="raids"> 
-  <div class="accordion-item" *ngFor="let raid of listOfPlayers; let i = index ">
+<div class="accordion container bg-white" id="raids" > 
+  <div class="accordion-item" *ngFor="let raid of listOfRaids; let i = index" >   
     <div class="accordion-header d-flex flex-nowrap" [id]="'panelsStayOpen-heading'+ i">
       <button class="accordion-button flex-grow" 
         type="button" 
@@ -23,14 +23,14 @@
             <div *ngIf="j < 1">
               <h3 class="card-subtitle text-muted">Search:</h3>
               <div class="btn-group d-flex flex-wrap mb-1" role="group" >
-                <div *ngFor="let day of usersActivity.days" >
+                <div *ngFor="let day of raidActivity.days" >
                   <input type="checkbox" class="btn-check" name="day_{{i}}" id="day_{{day}}_{{i}}" (click)="searchInDays(day, i)">
                   <label class="btn btn-outline-primary btn-sm" for="day_{{day}}_{{i}}">{{day}}</label>
                   
                 </div>
               </div>
               <div class="btn-group d-flex flex-wrap" role="group" *ngIf="searchDays[i].length > 0">
-                <div *ngFor="let hour of usersActivity.hours">
+                <div *ngFor="let hour of raidActivity.hours">
                   <input type="checkbox" class="btn-check" name="hour_{{i}}" id="hour_{{hour}}_{{i}}" (click)="searchInHours(hour, i)">
                   <label class="btn btn-outline-primary btn-sm" for="hour_{{hour}}_{{i}}">{{hour}}</label>
                 </div>

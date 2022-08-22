@@ -1,4 +1,4 @@
-<form [formGroup]="myRaids" class="container form-group bg-white pt-2" (ngSubmit)="saveRaidGroup()">
+<form [formGroup]="myRaids" class="container form-group bg-white pt-2" (ngSubmit)="formService.saveRaidGroup(myRaids)">
   <div class="card mb-2">
     <div class="card-header form-group">
       <div class="input-group" formGroupName="week">
@@ -105,4 +105,4 @@
     <button class="btn btn-primary m-3" type="submit" [disabled]="!myRaids.valid">Save raid group</button>
   </div>
 </form>
-<pre class="bg-white">{{myRaids.value | json}}</pre>
+

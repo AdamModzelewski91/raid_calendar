@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { routing } from './app.routes';
 import { StoreModule } from '@ngrx/store';
+import { HttpClientModule } from '@angular/common/http'
 
 import { AppComponent } from './app.component';
 import { FormComponent } from './components/form/form.component';
@@ -30,6 +31,7 @@ import { DragDropModule} from '@angular/cdk/drag-drop'
     BrowserModule,
     FormsModule,
     DragDropModule,
+    HttpClientModule,
     routing,
     StoreModule.forRoot({}, {}),
     BrowserAnimationsModule,
